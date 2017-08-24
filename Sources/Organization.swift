@@ -25,9 +25,9 @@ public struct Organization {
 
 			// Remove `#` and `0x`
 			if hex.hasPrefix("#") {
-				hex = hex.substringFromIndex(1)
+				hex = hex.substring(from: 1) as NSString
 			} else if hex.hasPrefix("0x") {
-				hex = hex.substringFromIndex(2)
+				hex = hex.substring(from: 2) as NSString
 			}
 
 			// Invalid if not 3, 6, or 8 characters
@@ -38,23 +38,23 @@ public struct Organization {
 
 			// Make the string 8 characters long for easier parsing
 			if length == 3 {
-				let r = hex.substringWithRange(NSRange(location: 0, length: 1))
-				let g = hex.substringWithRange(NSRange(location: 1, length: 1))
-				let b = hex.substringWithRange(NSRange(location: 2, length: 1))
-				hex = r + r + g + g + b + b + "ff"
+				let r = hex.substring(with: NSRange(location: 0, length: 1))
+				let g = hex.substring(with: NSRange(location: 1, length: 1))
+				let b = hex.substring(with: NSRange(location: 2, length: 1))
+                hex = "\(r)\(r)\(g)\(g)\(b)\(b)ff" as NSString
 			} else if length == 6 {
-				hex = String(hex) + "ff"
+				hex = String(hex) + "ff" as NSString
 			}
 
 			// Convert 2 character strings to CGFloats
-			func hexValue(string: String) -> Double {
+			func hexValue(_ string: String) -> Double {
 				let value = Double(strtoul(string, nil, 16))
 				return value / 255
 			}
 
-			red = hexValue(hex.substringWithRange(NSRange(location: 0, length: 2)))
-			green = hexValue(hex.substringWithRange(NSRange(location: 2, length: 2)))
-			blue = hexValue(hex.substringWithRange(NSRange(location: 4, length: 2)))
+			red = hexValue(hex.substring(with: NSRange(location: 0, length: 2)))
+			green = hexValue(hex.substring(with: NSRange(location: 2, length: 2)))
+			blue = hexValue(hex.substring(with: NSRange(location: 4, length: 2)))
 		}
 	}
 
@@ -83,14 +83,14 @@ extension Organization: Resource {
 extension Organization: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
 		var dictionary: JSONDictionary = [
-			"id": id,
-			"name": name,
-			"slug": slug,
-			"members_count": membersCount
+			"id": id as AnyObject,
+			"name": name as AnyObject,
+			"slug": slug as AnyObject,
+			"members_count": membersCount as AnyObject
 		]
 
 		if let color = color {
-			dictionary["color"] = color.hex
+			dictionary["color"] = color.hex as AnyObject
 		}
 
 		return dictionary
@@ -98,9 +98,9 @@ extension Organization: JSONSerializable, JSONDeserializable {
 
 	public init?(dictionary: JSONDictionary) {
 		guard let id = dictionary["id"] as? String,
-			name = dictionary["name"] as? String,
-			slug = dictionary["slug"] as? String,
-			membersCount = dictionary["members_count"] as? UInt
+			let name = dictionary["name"] as? String,
+			let slug = dictionary["slug"] as? String,
+			let membersCount = dictionary["members_count"] as? UInt
 		else { return nil }
 
 		self.id = id

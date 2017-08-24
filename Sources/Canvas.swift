@@ -27,8 +27,8 @@ public struct Canvas {
 		return summary.isEmpty
 	}
 
-	public var url: NSURL? {
-		return NSURL(string: "https://usecanvas.com/\(organization.slug)/-/\(id)")
+	public var url: URL? {
+		return URL(string: "https://usecanvas.com/\(organization.slug)/-/\(id)")
 	}
 }
 
@@ -51,18 +51,18 @@ extension Canvas: Resource {
 extension Canvas: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
 		var dictionary: [String: AnyObject] = [
-			"id": id,
-			"collection": organization.dictionary,
-			"is_writable": isWritable,
-			"is_public_writable": isPublicWritable,
-			"updated_at": updatedAt.ISO8601String()!,
-			"title": title,
-			"summary": summary,
-			"native_version": nativeVersion
+			"id": id as AnyObject,
+			"collection": organization.dictionary as AnyObject,
+			"is_writable": isWritable as AnyObject,
+			"is_public_writable": isPublicWritable as AnyObject,
+			"updated_at": updatedAt.iso8601String()! as AnyObject,
+			"title": title as AnyObject,
+			"summary": summary as AnyObject,
+			"native_version": nativeVersion as AnyObject
 		]
 
 		if let archivedAt = archivedAt {
-			dictionary["archived_at"] = archivedAt.ISO8601String()
+			dictionary["archived_at"] = archivedAt.iso8601String() as AnyObject
 		}
 
 		return dictionary
@@ -70,15 +70,15 @@ extension Canvas: JSONSerializable, JSONDeserializable {
 
 	public init?(dictionary: JSONDictionary) {
 		guard let id = dictionary["id"] as? String,
-			org = dictionary["org"] as? JSONDictionary,
-			organization = Organization(dictionary: org),
-			isWritable = dictionary["is_writable"] as? Bool,
-			isPublicWritable = dictionary["is_public_writable"] as? Bool,
-			updatedAtString = dictionary["updated_at"] as? String,
-			updatedAt = NSDate(ISO8601String: updatedAtString),
-			title = dictionary["title"] as? String,
-			summary = dictionary["summary"] as? String,
-			nativeVersion = dictionary["native_version"] as? String
+			let org = dictionary["org"] as? JSONDictionary,
+			let organization = Organization(dictionary: org),
+			let isWritable = dictionary["is_writable"] as? Bool,
+			let isPublicWritable = dictionary["is_public_writable"] as? Bool,
+			let updatedAtString = dictionary["updated_at"] as? String,
+			let updatedAt = NSDate(iso8601String: updatedAtString),
+			let title = dictionary["title"] as? String,
+			let summary = dictionary["summary"] as? String,
+			let nativeVersion = dictionary["native_version"] as? String
 		else { return nil }
 
 		self.id = id
@@ -91,7 +91,7 @@ extension Canvas: JSONSerializable, JSONDeserializable {
 		self.updatedAt = updatedAt
 
 		let archivedAtString = dictionary["archived_at"] as? String
-		archivedAt = archivedAtString.flatMap { NSDate(ISO8601String: $0) }
+		archivedAt = archivedAtString.flatMap { NSDate(iso8601String: $0) }
 	}
 }
 
@@ -106,3 +106,17 @@ extension Canvas: Hashable {
 public func ==(lhs: Canvas, rhs: Canvas) -> Bool {
 	return lhs.id == rhs.id
 }
+
+/* extension Date {
+    init?(iso8601String dateString:String) {
+        let nsdate = NSDate(iso8601String: dateString)
+        if let date = nsdate as Date? {
+            self = date
+        }
+    }
+    
+    func iso8601String() -> String? {
+        let d = self as NSDate
+        return d.iso8601String()
+    }
+} */

@@ -25,33 +25,33 @@ public struct Account {
 extension Account: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
 		var account: JSONDictionary = [
-			"email": email,
-			"user": user.dictionary
+			"email": email as AnyObject,
+			"user": user.dictionary as AnyObject
 		]
 
-		if let verifiedAt = verifiedAt?.ISO8601String() {
-			account["verified_at"] = verifiedAt
+		if let verifiedAt = verifiedAt?.iso8601String() {
+			account["verified_at"] = verifiedAt as AnyObject
 		}
 
 		return [
-			"access_token": accessToken,
-			"account": account
+			"access_token": accessToken as AnyObject,
+			"account": account as AnyObject
 		]
 	}
 
 	public init?(dictionary: JSONDictionary) {
 		guard let accessToken = dictionary["access_token"] as? String,
-			accountDictionary = dictionary["account"] as? JSONDictionary,
-			email = accountDictionary["email"] as? String,
-			userDictionary = accountDictionary["user"] as? JSONDictionary,
-			user = User(dictionary: userDictionary)
+			let accountDictionary = dictionary["account"] as? JSONDictionary,
+			let email = accountDictionary["email"] as? String,
+			let userDictionary = accountDictionary["user"] as? JSONDictionary,
+			let user = User(dictionary: userDictionary)
 		else { return nil }
 
 		id = user.id
 		self.accessToken = accessToken
 		self.user = user
 		self.email = email
-		verifiedAt = (accountDictionary["verified_at"] as? String).flatMap { NSDate(ISO8601String: $0) }
+		verifiedAt = (accountDictionary["verified_at"] as? String).flatMap { NSDate(iso8601String: $0) }
 	}
 }
 
@@ -65,6 +65,6 @@ extension Account: Resource {
 
 		let username: String = try data.decode(attribute: "username")
 		let avatarURL: String = try data.decode(attribute: "avatar_url")
-		user = User(id: id, username: username, avatarURL: NSURL(string: avatarURL))
+		user = User(id: id, username: username, avatarURL: URL(string: avatarURL)!)
 	}
 }

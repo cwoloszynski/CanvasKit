@@ -14,14 +14,14 @@ public struct AuthorizationClient: NetworkClient {
 	// MARK: - Properties
 
 	public let clientID: String
-	private let clientSecret: String
-	public let baseURL: NSURL
-	public let session: NSURLSession
+	fileprivate let clientSecret: String
+	public let baseURL: URL
+	public let session: URLSession
 
 
 	// MARK: - Initializers
 
-	public init(clientID: String, clientSecret: String, baseURL: NSURL = CanvasKit.baseURL, session: NSURLSession = NSURLSession.sharedSession()) {
+	public init(clientID: String, clientSecret: String, baseURL: URL = CanvasKit.baseURL as URL, session: URLSession = URLSession.shared) {
 		self.clientID = clientID
 		self.clientSecret = clientSecret
 		self.baseURL = baseURL
@@ -31,7 +31,7 @@ public struct AuthorizationClient: NetworkClient {
 	
 	// MARK: - Creating an Account
 	
-	public func createAccount(email email: String, username: String, password: String, completion: Result<Void> -> Void) {
+	public func createAccount(_ email: String, username: String, password: String, completion: @escaping (Result<Void>) -> Void) {
 		let params = [
 			"data": [
 				"type": "account",
@@ -43,32 +43,32 @@ public struct AuthorizationClient: NetworkClient {
 			]
 		]
 
-		let request = self.request(path: "account", parameters: params)
-		session.dataTaskWithRequest(request) { responseData, response, error in
+		let request = self.request("account", parameters: params as JSONDictionary)
+		session.dataTask(with: request, completionHandler: { responseData, response, error in
 			guard let responseData = responseData,
-				json = try? NSJSONSerialization.JSONObjectWithData(responseData, options: []),
-				dictionary = json as? JSONDictionary
+				let json = try? JSONSerialization.jsonObject(with: responseData, options: []),
+				let dictionary = json as? JSONDictionary
 			else {
-				dispatch_async(networkCompletionQueue) {
-					completion(.Failure("Invalid response."))
+				networkCompletionQueue.async {
+					completion(.failure("Invalid response."))
 				}
 				return
 			}
 
-			if let status = (response as? NSHTTPURLResponse)?.statusCode where status == 201 {
-				dispatch_async(networkCompletionQueue) {
-					completion(.Success())
+			if let status = (response as? HTTPURLResponse)?.statusCode, status == 201 {
+				networkCompletionQueue.async {
+					completion(.success())
 				}
 				return
 			}
 
-			dispatch_async(networkCompletionQueue) {
-				completion(.Failure(self.parseErrors(dictionary) ?? "Invalid response."))
+			networkCompletionQueue.async {
+				completion(.failure(self.parseErrors(dictionary) ?? "Invalid response."))
 			}
-		}.resume()
+		}) .resume()
 	}
 	
-	public func verifyAccount(token token: String, completion: Result<Account> -> Void) {
+	public func verifyAccount(_ token: String, completion: @escaping (Result<Account>) -> Void) {
 		let params = [
 			"data": [
 				"type": "account",
@@ -78,58 +78,58 @@ public struct AuthorizationClient: NetworkClient {
 			]
 		]
 
-		let request = self.request(path: "account/actions/verify", parameters: params)
-		session.dataTaskWithRequest(request) { responseData, response, error in
+		let request = self.request("account/actions/verify", parameters: params as JSONDictionary)
+		session.dataTask(with: request, completionHandler: { responseData, response, error in
 			guard let responseData = responseData,
-				json = try? NSJSONSerialization.JSONObjectWithData(responseData, options: []),
-				dictionary = json as? JSONDictionary
+				let json = try? JSONSerialization.jsonObject(with: responseData, options: []),
+				let dictionary = json as? JSONDictionary
 			else {
-				dispatch_async(networkCompletionQueue) {
-					completion(.Failure("Invalid response."))
+				networkCompletionQueue.async {
+					completion(.failure("Invalid response."))
 				}
 				return
 			}
 
 			if let account: Account = ResourceSerialization.deserialize(dictionary: dictionary) {
-				dispatch_async(networkCompletionQueue) {
-					completion(.Success(account))
+				networkCompletionQueue.async {
+					completion(.success(account))
 				}
 				return
 			}
 
-			dispatch_async(networkCompletionQueue) {
-				completion(.Failure(self.parseErrors(dictionary) ?? "Invalid response."))
+			networkCompletionQueue.async {
+				completion(.failure(self.parseErrors(dictionary) ?? "Invalid response."))
 			}
-		}.resume()
+		}) .resume()
 	}
 
 
 	// MARK: - Private
 
-	private func request(path path: String, parameters: JSONDictionary) -> NSURLRequest {
-		let request = NSMutableURLRequest(URL: baseURL.URLByAppendingPathComponent(path))
-		request.HTTPMethod = "POST"
-		request.HTTPBody = try? NSJSONSerialization.dataWithJSONObject(parameters, options: [])
+	fileprivate func request(_ path: String, parameters: JSONDictionary) -> URLRequest {
+		let request = NSMutableURLRequest(url: baseURL.appendingPathComponent(path))
+		request.httpMethod = "POST"
+		request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 		request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Accept")
 
 		// Add the client authorization
-		if let authorization = authorizationHeader(username: clientID, password: clientSecret) {
+		if let authorization = authorizationHeader(clientID, password: clientSecret) {
 			request.setValue(authorization, forHTTPHeaderField: "Client-Authorization")
 		}
 
-		return request
+		return request as URLRequest
 	}
 
-	private func authorizationHeader(username username: String, password: String) -> String? {
-		guard let data = "\(username):\(password)".dataUsingEncoding(NSUTF8StringEncoding)
+	fileprivate func authorizationHeader(_ username: String, password: String) -> String? {
+		guard let data = "\(username):\(password)".data(using: String.Encoding.utf8)
 		else { return nil }
 
-		let base64 = data.base64EncodedStringWithOptions([])
+		let base64 = data.base64EncodedString(options: [])
 		return "Basic \(base64)"
 	}
 
-	private func parseErrors(dictionary: JSONDictionary) -> String? {
+	fileprivate func parseErrors(_ dictionary: JSONDictionary) -> String? {
 		guard let errors = dictionary["errors"] as? [JSONDictionary] else { return nil }
 		var errorMessages = [String]()
 
@@ -140,13 +140,13 @@ public struct AuthorizationClient: NetworkClient {
 				guard let values = values as? [String] else { continue }
 
 				for value in values {
-					errorMessages.append("\(key.capitalizedString) \(value).")
+					errorMessages.append("\(key.capitalized) \(value).")
 				}
 			}
 		}
 
 		guard !errorMessages.isEmpty else { return nil }
 
-		return errorMessages.joinWithSeparator(" ")
+		return errorMessages.joined(separator: " ")
 	}
 }
