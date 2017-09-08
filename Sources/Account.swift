@@ -15,7 +15,7 @@ public struct Account {
 	// MARK: - Properties
 
 	public let id: String
-    public let recordID: CKRecordID?
+    public let recordName: String?
 	public let accessToken: String
 	public let email: String
 	public let verifiedAt: NSDate?
@@ -54,16 +54,16 @@ extension Account: JSONSerializable, JSONDeserializable {
 		self.user = user
 		self.email = email
 		verifiedAt = (accountDictionary["verified_at"] as? String).flatMap { NSDate(iso8601String: $0) }
-        self.recordID = nil
+        self.recordName = nil
 	}
     
-    public init?(recordID: CKRecordID, username: String) {
+    public init?(recordName: String, username: String) {
         id = "temporary-id"
-        self.recordID = recordID
+        self.recordName = recordName
         self.accessToken = "temporary-token"
         self.email = "temporary-email"
         self.verifiedAt = NSDate()
-        self.user = User(id: recordID.recordName, username: username, avatarURL: nil)
+        self.user = User(id: recordName, username: username, avatarURL: nil)
     }
 }
 
@@ -78,6 +78,6 @@ extension Account: Resource {
 		let username: String = try data.decode(attribute: "username")
 		let avatarURL: String = try data.decode(attribute: "avatar_url")
 		user = User(id: id, username: username, avatarURL: URL(string: avatarURL)!)
-        self.recordID = nil
+        self.recordName = nil
 	}
 }
