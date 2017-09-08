@@ -1,5 +1,5 @@
 //
-//  APIClientOrganizationTests.swift
+//  APIClientProjectTests.swift
 //  CanvasKitTests
 //
 //  Created by Sam Soffes on 11/2/15.
@@ -10,16 +10,16 @@ import XCTest
 import DVR
 import CanvasKit
 
-class APIClientOrganizationTests: XCTestCase {
-	func testListOrganizations() {
+class APIClientProjectTests: XCTestCase {
+	func testListProjects() {
 		let expectation = expectationWithDescription("Networking")
-		let dvr = Session(cassetteName: "list-organizations")
+		let dvr = Session(cassetteName: "list-projects")
 		let client = APIClient(accessToken: "REDACTED_TOKEN", session: dvr)
 
-		client.listOrganizations {
+		client.listProjects {
 			switch $0 {
-			case .Success(let organizations):
-				XCTAssertEqual(["soffes", "canvas"], organizations.map({ $0.name }))
+			case .Success(let projects):
+				XCTAssertEqual(["soffes", "canvas"], projects.map({ $0.name }))
 			default:
 				XCTFail()
 			}

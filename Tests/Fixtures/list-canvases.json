@@ -19,7 +19,7 @@
             },
             "updated_at" : "2016-03-04T21:04:13.874Z",
             "native_version" : "0",
-            "org" : {
+            "project" : {
               "id" : "e37d16d8-4223-4ef5-bf8a-75e59a5ab1f5",
               "slug" : "soffes",
               "members_count" : 1,
@@ -44,7 +44,7 @@
             },
             "updated_at" : "2016-03-01T07:47:31.000Z",
             "native_version" : "0",
-            "org" : {
+            "project" : {
               "id" : "e37d16d8-4223-4ef5-bf8a-75e59a5ab1f5",
               "slug" : "soffes",
               "members_count" : 1,

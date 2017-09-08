@@ -16,7 +16,7 @@ class APIClientCanvasTests: XCTestCase {
 		let dvr = Session(cassetteName: "list-canvases")
 		let client = APIClient(accessToken: "REDACTED_ACCESS_TOKEN", session: dvr)
 
-		client.listCanvases(organizationID: "soffes") {
+		client.listCanvases(projectID: "soffes") {
 			switch $0 {
 			case .Success(let canvases):
 				XCTAssertEqual(["Ducati Scrambler Tires", "Drums"], canvases.flatMap({ $0.title }))
@@ -34,7 +34,7 @@ class APIClientCanvasTests: XCTestCase {
 		let dvr = Session(cassetteName: "create-canvas")
 		let client = APIClient(accessToken: "REDACTED_ACCESS_TOKEN", session: dvr)
 
-		client.createCanvas(organizationID: "test", content: "# From CanvasKit\nYay.") {
+		client.createCanvas(projectID: "test", content: "# From CanvasKit\nYay.") {
 			switch $0 {
 			case .Success(let canvas):
 				XCTAssertEqual("From CanvasKit", canvas.title)

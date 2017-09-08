@@ -18,7 +18,7 @@
           },
           "updated_at" : "2016-03-04T22:19:16.849Z",
           "native_version" : "0",
-          "org" : {
+          "project" : {
             "slug" : "test",
             "color" : "ff416c",
             "members_count" : 6,
@@ -53,7 +53,7 @@
         "method" : "POST",
         "body" : {
           "content" : "# From CanvasKit\nYay.",
-          "org" : {
+          "project" : {
             "id" : "test"
           }
         },

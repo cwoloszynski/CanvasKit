@@ -1,12 +1,13 @@
 //
-//  Organization.swift
+//  Project.swift
 //  CanvasKit
 //
 //  Created by Sam Soffes on 11/3/15.
 //  Copyright © 2015 Canvas Labs, Inc. All rights reserved.
 //
+import UIKit
 
-public struct Organization {
+public struct Project {
 
 	// MARK: - Types
 
@@ -56,6 +57,11 @@ public struct Organization {
 			green = hexValue(hex.substring(with: NSRange(location: 2, length: 2)))
 			blue = hexValue(hex.substring(with: NSRange(location: 4, length: 2)))
 		}
+        
+        var uiColor: UIColor {
+            return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: 1)
+        }
+
 	}
 
 
@@ -69,7 +75,7 @@ public struct Organization {
 }
 
 
-extension Organization: Resource {
+extension Project: Resource {
 	init(data: ResourceData) throws {
 		id = data.id
 		name = try data.decode(attribute: "name")
@@ -80,7 +86,7 @@ extension Organization: Resource {
 }
 
 
-extension Organization: JSONSerializable, JSONDeserializable {
+extension Project: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
 		var dictionary: JSONDictionary = [
 			"id": id as AnyObject,
@@ -112,13 +118,13 @@ extension Organization: JSONSerializable, JSONDeserializable {
 }
 
 
-extension Organization: Hashable {
+extension Project: Hashable {
 	public var hashValue: Int {
 		return id.hashValue
 	}
 }
 
 
-public func ==(lhs: Organization, rhs: Organization) -> Bool {
+public func ==(lhs: Project, rhs: Project) -> Bool {
 	return lhs.id == rhs.id
 }

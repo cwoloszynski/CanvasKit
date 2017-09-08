@@ -14,7 +14,7 @@ public struct Canvas {
 	// MARK: - Properties
 
 	public let id: String
-	public let organization: Organization
+	public let project: Project
 	public let isWritable: Bool
 	public let isPublicWritable: Bool
 	public let title: String
@@ -28,7 +28,7 @@ public struct Canvas {
 	}
 
 	public var url: URL? {
-		return URL(string: "https://usecanvas.com/\(organization.slug)/-/\(id)")
+		return URL(string: "https://usecanvas.com/\(project.slug)/-/\(id)")
 	}
 }
 
@@ -36,7 +36,7 @@ public struct Canvas {
 extension Canvas: Resource {
 	init(data: ResourceData) throws {
 		id = data.id
-		organization = try data.decode(relationship: "org")
+		project = try data.decode(relationship: "project")
 		isWritable = try data.decode(attribute: "is_writable")
 		isPublicWritable = try data.decode(attribute: "is_public_writable")
 		updatedAt = try data.decode(attribute: "updated_at")
@@ -52,7 +52,7 @@ extension Canvas: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
 		var dictionary: [String: AnyObject] = [
 			"id": id as AnyObject,
-			"collection": organization.dictionary as AnyObject,
+			"collection": project.dictionary as AnyObject,
 			"is_writable": isWritable as AnyObject,
 			"is_public_writable": isPublicWritable as AnyObject,
 			"updated_at": updatedAt.iso8601String()! as AnyObject,
@@ -70,8 +70,8 @@ extension Canvas: JSONSerializable, JSONDeserializable {
 
 	public init?(dictionary: JSONDictionary) {
 		guard let id = dictionary["id"] as? String,
-			let org = dictionary["org"] as? JSONDictionary,
-			let organization = Organization(dictionary: org),
+			let org = dictionary["project"] as? JSONDictionary,
+			let project = Project(dictionary: org),
 			let isWritable = dictionary["is_writable"] as? Bool,
 			let isPublicWritable = dictionary["is_public_writable"] as? Bool,
 			let updatedAtString = dictionary["updated_at"] as? String,
@@ -82,7 +82,7 @@ extension Canvas: JSONSerializable, JSONDeserializable {
 		else { return nil }
 
 		self.id = id
-		self.organization = organization
+		self.project = project
 		self.isWritable = isWritable
 		self.isPublicWritable = isPublicWritable
 		self.title = title

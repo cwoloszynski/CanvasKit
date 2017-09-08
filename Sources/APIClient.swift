@@ -55,13 +55,13 @@ open class APIClient: NetworkClient {
 	}
 
 
-	// MARK: - Organizations
+	// MARK: - Projects
 
-	/// List organizations.
+	/// List projects.
 	///
 	/// - parameter completion: A function to call when the request finishes.
-	open func listOrganizations(_ completion: @escaping (Result<[Organization]>) -> Void) {
-		request(path: "orgs", completion: completion)
+	open func listProjects(_ completion: @escaping (Result<[Project]>) -> Void) {
+		request(path: "projects", completion: completion)
 	}
 
 	// MARK: - Canvases
@@ -71,16 +71,16 @@ open class APIClient: NetworkClient {
 	/// - parameter id: The canvas ID.
 	/// - parameter completion: A function to call when the request finishes.
 	open func showCanvas(_ id: String, completion: @escaping (Result<Canvas>) -> Void) {
-		request(path: "canvases/\(id)", parameters: ["include": "org" as AnyObject], completion: completion)
+		request(path: "canvases/\(id)", parameters: ["include": "project" as AnyObject], completion: completion)
 	}
 
 	/// Create a canvas.
 	///
-	/// - parameter organizationID: The ID of the organization to own the created canvas.
+	/// - parameter projectID: The ID of the project to own the created canvas.
 	/// - parameter content: Optional content formatted as CanvasNative for the new canvas.
 	/// - parameter isPublicWritable: Boolean indicating if the new canvas should be publicly writable.
 	/// - parameter completion: A function to call when the request finishes.
-	open func createCanvas(_ organizationID: String, content: String? = nil, isPublicWritable: Bool? = nil, completion: @escaping (Result<Canvas>) -> Void) {
+	open func createCanvas(_ projectID: String, content: String? = nil, isPublicWritable: Bool? = nil, completion: @escaping (Result<Canvas>) -> Void) {
 		var attributes = JSONDictionary()
 
 		if let content = content {
@@ -96,15 +96,15 @@ open class APIClient: NetworkClient {
 				"type": "canvases",
 				"attributes": attributes,
 				"relationships": [
-					"org": [
+					"project": [
 						"data": [
-							"type": "orgs",
-							"id": organizationID
+							"type": "projects",
+							"id": projectID
 						]
 					]
 				]
 			],
-			"include": "org"
+			"include": "project"
 		] as [String : Any]
 
 		request(.POST, path: "canvases", parameters: params as JSONDictionary, completion: completion)
@@ -112,31 +112,31 @@ open class APIClient: NetworkClient {
 
 	/// List canvases.
 	///
-	/// - parameter organizationID: Limit the results to a given organization.
+	/// - parameter projectID: Limit the results to a given project.
 	/// - parameter completion: A function to call when the request finishes.
-	open func listCanvases(_ organizationID: String? = nil, completion: @escaping (Result<[Canvas]>) -> Void) {
+	open func listCanvases(_ projectID: String? = nil, completion: @escaping (Result<[Canvas]>) -> Void) {
 		var params: JSONDictionary = [
-			"include": "org" as AnyObject
+			"include": "project" as AnyObject
 		]
 
-		if let organizationID = organizationID {
-			params["filter[org.id]"] = organizationID as AnyObject
+		if let projectID = projectID {
+			params["filter[org.id]"] = projectID as AnyObject
 		}
 
 		request(path: "canvases", parameters: params, completion: completion)
 	}
 
-	/// Search for canvases in an organization.
+	/// Search for canvases in an project.
 	///
-	/// - parameter organizationID: The organization ID.
+	/// - parameter projectID: The project ID.
 	/// - parameter query: The search query.
 	/// - parameter completion: A function to call when the request finishes.
-	open func searchCanvases(_ organizationID: String, query: String, completion: @escaping (Result<[Canvas]>) -> Void) {
+	open func searchCanvases(_ projectID: String, query: String, completion: @escaping (Result<[Canvas]>) -> Void) {
 		let params = [
 			"query": query,
-			"include": "org"
+			"include": "project"
 		]
-		request(path: "orgs/\(organizationID)/actions/search", parameters: params as JSONDictionary, completion: completion)
+		request(path: "orgs/\(projectID)/actions/search", parameters: params as JSONDictionary, completion: completion)
 	}
 
 	/// Destroy a canvas.
@@ -175,7 +175,7 @@ open class APIClient: NetworkClient {
         ]
         let params: JSONDictionary = [
 			"data": d as AnyObject,
-            "include": "org" as AnyObject
+            "include": "project" as AnyObject
         ]
 		request(.PATCH, path: "canvases/\(id)", parameters: params, completion: completion)
 	}
@@ -314,7 +314,7 @@ open class APIClient: NetworkClient {
 
 	fileprivate func canvasAction(_ name: String, id: String, completion: ((Result<Canvas>) -> Void)?) {
 		let path = "canvases/\(id)/actions/\(name)"
-		let params = ["include": "org"]
+		let params = ["include": "project"]
 		request(.POST, path: path, parameters: params as JSONDictionary, completion: completion)
 	}
 }
