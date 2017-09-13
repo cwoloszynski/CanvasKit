@@ -5,10 +5,19 @@
 //  Created by Sam Soffes on 11/3/15.
 //  Copyright © 2015 Canvas Labs, Inc. All rights reserved.
 //
+import Foundation
 import UIKit
+
+public enum SerializationError: Error {
+    case missingFile
+    case invalidJson
+    case missing(String)
+    case invalid(String, Any)
+}
 
 public struct Project {
 
+    
 	// MARK: - Types
 
 	public struct Color {
@@ -68,20 +77,32 @@ public struct Project {
 	// MARK: - Properties
 
 	public let id: String
-	public let name: String
+	public var name: String
 	public let slug: String
+    public let isPersonal: Bool
 	public let membersCount: UInt
 	public let color: Color?
+    
+    enum Keys {
+        static let id = "id"
+        static let name = "name"
+        static let slug = "slug"
+        static let membersCount = "members_count"
+        static let isPersonal = "isPersonal"
+        static let color = "color"
+        
+    }
 }
 
 
 extension Project: Resource {
 	init(data: ResourceData) throws {
 		id = data.id
-		name = try data.decode(attribute: "name")
-		slug = try data.decode(attribute: "slug")
-		membersCount = try data.decode(attribute: "members_count")
-		color = (data.attributes["color"] as? String).flatMap(Color.init)
+		name = try data.decode(attribute: Keys.name)
+		slug = try data.decode(attribute: Keys.slug)
+		membersCount = try data.decode(attribute: Keys.membersCount)
+        isPersonal = try data.decode(attribute: Keys.isPersonal)
+		color = (data.attributes[Keys.color] as? String).flatMap(Color.init)
 	}
 }
 
@@ -89,34 +110,48 @@ extension Project: Resource {
 extension Project: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
 		var dictionary: JSONDictionary = [
-			"id": id as AnyObject,
-			"name": name as AnyObject,
-			"slug": slug as AnyObject,
-			"members_count": membersCount as AnyObject
+			Keys.id: id as AnyObject,
+			Keys.name: name as AnyObject,
+			Keys.slug: slug as AnyObject,
+			Keys.isPersonal: isPersonal as AnyObject,
+			Keys.membersCount: membersCount as AnyObject
 		]
 
 		if let color = color {
-			dictionary["color"] = color.hex as AnyObject
+			dictionary[Keys.color] = color.hex as AnyObject
 		}
 
 		return dictionary
 	}
 
 	public init?(dictionary: JSONDictionary) {
-		guard let id = dictionary["id"] as? String,
-			let name = dictionary["name"] as? String,
-			let slug = dictionary["slug"] as? String,
-			let membersCount = dictionary["members_count"] as? UInt
+		guard let id = dictionary[Keys.id] as? String,
+			let name = dictionary[Keys.name] as? String,
+			let slug = dictionary[Keys.slug] as? String,
+			let membersCount = dictionary[Keys.membersCount] as? UInt,
+            let isPersonal = dictionary[Keys.isPersonal] as? Bool
+
 		else { return nil }
 
 		self.id = id
 		self.name = name
 		self.slug = slug
 		self.membersCount = membersCount
-		color = (dictionary["color"] as? String).flatMap(Color.init)
+        self.isPersonal = isPersonal
+		color = (dictionary[Keys.color] as? String).flatMap(Color.init)
 	}
 }
 
+extension Project : JSONRepresentable {
+    public func toJSON() -> [String: Any]? {
+        return [ Keys.id: id,
+                 Keys.name: name,
+                 Keys.membersCount: membersCount,
+                 Keys.slug : slug,
+                 Keys.color: color as Any
+        ]
+    }
+}
 
 extension Project: Hashable {
 	public var hashValue: Int {
