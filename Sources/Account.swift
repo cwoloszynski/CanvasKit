@@ -26,6 +26,13 @@ public struct Account {
             return recordName == ""
         }
     }
+    
+    public var isCloudKit: Bool {
+        get {
+            if let recordName = recordName,  recordName != "" { return true }
+            return false
+        }
+    }
 }
 
 
