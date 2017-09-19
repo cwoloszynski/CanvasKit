@@ -20,6 +20,12 @@ public struct Account {
 	public let email: String
 	public let verifiedAt: NSDate?
 	public let user: User
+    
+    public var isLocal: Bool {
+        get {
+            return recordName == ""
+        }
+    }
 }
 
 
