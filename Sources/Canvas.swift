@@ -11,16 +11,16 @@ import ISO8601
 
 public struct Canvas {
 
-    enum Keys {
-        static let ProjectId = "projectId"
-        static let Id = "id"
-        static let IsWritable = "isWritable"
-        static let IsPublicWritable = "isPublicWritable"
-        static let UpdatedAt = "updatedAt"
-        static let Title = "title"
-        static let Summary = "summary"
-        static let NativeVersion = "nativeVersion"
-        static let ArchivedAt = "archivedAt"
+    public enum Keys {
+        public static let ProjectId = "projectId"
+        public static let Id = "id"
+        public static let IsWritable = "isWritable"
+        public static let IsPublicWritable = "isPublicWritable"
+        public static let UpdatedAt = "updatedAt"
+        public static let Title = "title"
+        public static let Summary = "summary"
+        public static let NativeVersion = "nativeVersion"
+        public static let ArchivedAt = "archivedAt"
     }
     
     
