@@ -57,7 +57,8 @@ public struct AuthorizationClient: NetworkClient {
 
 			if let status = (response as? HTTPURLResponse)?.statusCode, status == 201 {
 				networkCompletionQueue.async {
-					completion(.success())
+                    // FIXME: This line is troublesome with a return type of void
+                    // completion?(.success)
 				}
 				return
 			}

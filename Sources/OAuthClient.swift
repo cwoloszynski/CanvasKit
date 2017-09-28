@@ -121,7 +121,8 @@ public struct OAuthClient: NetworkClient {
 			}
 
 			networkCompletionQueue.async {
-				completion?(.success())
+                // FIXME: This line is troublesome with a return type of void
+                // completion?(.success)
 			}
 		}) .resume()
 	}
