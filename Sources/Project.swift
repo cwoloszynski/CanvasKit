@@ -110,15 +110,15 @@ extension Project: Resource {
 extension Project: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
 		var dictionary: JSONDictionary = [
-			Keys.id: id as AnyObject,
-			Keys.name: name as AnyObject,
-			Keys.slug: slug as AnyObject,
-			Keys.isPersonal: isPersonal as AnyObject,
-			Keys.membersCount: membersCount as AnyObject
+			Keys.id: id,
+			Keys.name: name,
+			Keys.slug: slug,
+			Keys.isPersonal: isPersonal,
+			Keys.membersCount: membersCount
 		]
 
 		if let color = color {
-			dictionary[Keys.color] = color.hex as AnyObject
+			dictionary[Keys.color] = color.hex
 		}
 
 		return dictionary
@@ -144,12 +144,7 @@ extension Project: JSONSerializable, JSONDeserializable {
 
 extension Project : JSONRepresentable {
     public func toJSON() -> [String: Any]? {
-        return [ Keys.id: id,
-                 Keys.name: name,
-                 Keys.membersCount: membersCount,
-                 Keys.slug : slug,
-                 Keys.color: color as Any
-        ]
+        return dictionary
     }
 }
 

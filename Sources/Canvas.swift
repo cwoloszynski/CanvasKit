@@ -63,15 +63,15 @@ extension Canvas: Resource {
 
 extension Canvas: JSONSerializable, JSONDeserializable {
 	public var dictionary: JSONDictionary {
-		var dictionary: [String: AnyObject] = [
-			Keys.Id: id as AnyObject,
-			Keys.ProjectId: projectId as AnyObject,
-			Keys.IsWritable: isWritable as AnyObject,
-			Keys.IsPublicWritable: isPublicWritable as AnyObject,
-			Keys.UpdatedAt: updatedAt.iso8601String()! as AnyObject,
-			Keys.Title: title as AnyObject,
-			Keys.Summary: summary as AnyObject,
-			Keys.NativeVersion: nativeVersion as AnyObject
+		var dictionary: [String: Any] = [
+			Keys.Id: id,
+			Keys.ProjectId: projectId,
+			Keys.IsWritable: isWritable,
+			Keys.IsPublicWritable: isPublicWritable ,
+			Keys.UpdatedAt: updatedAt.iso8601String()!,
+			Keys.Title: title,
+			Keys.Summary: summary,
+			Keys.NativeVersion: nativeVersion
 		]
 
 		if let archivedAt = archivedAt {
@@ -115,10 +115,9 @@ extension Canvas: Hashable {
 }
 
 extension Canvas : JSONRepresentable {
+
     public func toJSON() -> [String: Any]? {
-        return [ Keys.Id: id,
-                 Keys.Title: title
-        ]
+        return dictionary
     }
 }
 

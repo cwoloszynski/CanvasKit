@@ -9,6 +9,6 @@
 import Foundation
 
 protocol JSONRepresentable {
-    func toJSON() -> [String: Any]?
+    func toJSON() -> JSONDictionary?
 }
 
