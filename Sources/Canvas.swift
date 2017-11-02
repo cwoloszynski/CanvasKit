@@ -28,10 +28,10 @@ public struct Canvas {
 
 	public let id: String
 	public let projectId: String
-	public let isWritable: Bool
+	public var isWritable: Bool
 	public let isPublicWritable: Bool
 	public var title: String
-	public let summary: String
+	public var summary: String
 	public let nativeVersion: String
 	public let updatedAt: NSDate
 	public let archivedAt: NSDate?
