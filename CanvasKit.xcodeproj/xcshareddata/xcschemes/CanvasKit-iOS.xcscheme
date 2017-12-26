@@ -23,7 +23,7 @@
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       language = ""
@@ -33,7 +33,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "21FB6AC41BF53C9D003C82BB"
+               BlueprintIdentifier = "CB9268101FED5A4A00218ED4"
                BuildableName = "CanvasKitTests-iOS.xctest"
                BlueprintName = "CanvasKitTests-iOS"
                ReferencedContainer = "container:CanvasKit.xcodeproj">
